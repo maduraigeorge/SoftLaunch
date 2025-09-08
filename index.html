@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Soft Launch Reveal</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #222; color: #fff; }
+    #reveal { display: none; margin-top: 40px; }
+    #launch-btn { font-size: 2rem; padding: 1em 2em; margin-top: 100px; background: #f39c12; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: background .2s;}
+    #launch-btn:hover { background: #d35400; }
+    .product { font-size: 2.5rem; margin: 40px 0; }
+  </style>
+</head>
+<body>
+  <h1>Ready for the Big Reveal?</h1>
+  <button id="launch-btn">Launch</button>
+  
+  <div id="reveal">
+    <div class="product">🎉 Here’s the Product! 🎉</div>
+    <!-- Lottie placeholder. Replace with a <lottie-player> or canvas here if needed -->
+    <canvas id="confetti-canvas"></canvas>
+  </div>
+
+  <!-- Suspense and celebration audio (provide your own mp3 files in ./audio/) -->
+  <audio id="suspense-audio" src="audio/suspense.mp3" loop></audio>
+  <audio id="celebration-audio" src="audio/celebration.mp3"></audio>
+
+  <!-- Confetti library (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    const suspenseAudio = document.getElementById('suspense-audio');
+    const celebrationAudio = document.getElementById('celebration-audio');
+    const launchBtn = document.getElementById('launch-btn');
+    const revealDiv = document.getElementById('reveal');
+
+    // Start suspense audio automatically
+    suspenseAudio.volume = 0.6;
+    suspenseAudio.play();
+
+    launchBtn.onclick = function() {
+      // Stop suspense, play celebration
+      suspenseAudio.pause();
+      celebrationAudio.play();
+      // Reveal product section
+      revealDiv.style.display = 'block';
+      launchBtn.style.display = 'none';
+      // Fire confetti!
+      fireConfetti();
+    };
+
+    // Simple confetti burst
+    function fireConfetti() {
+      var end = Date.now() + 2 * 1000;
+      (function frame() {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      }());
+    }
+  </script>
+</body>
+</html>
