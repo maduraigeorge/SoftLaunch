@@ -12,16 +12,17 @@
         body {
             font-family: 'Inter', sans-serif;
             overflow: hidden; /* Prevent scrollbars during animations */
-            background: linear-gradient(125deg, #e0c3fc 0%, #8ec5fc 100%);
+            background: linear-gradient(125deg, #75E8FE, #C6C2FA);
+            transition: background 2s ease-in-out;
         }
 
         /* Glow effect for the launch button */
         .launch-button-glow {
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0);
+            box-shadow: 0 0 15px rgba(54, 49, 135, 0);
             transition: box-shadow 0.3s ease-in-out;
         }
         .launch-button-glow:hover {
-            box-shadow: 0 0 35px rgba(59, 130, 246, 0.7);
+            box-shadow: 0 0 35px rgba(54, 49, 135, 0.7);
         }
 
         /* Define the rocket shape */
@@ -30,6 +31,14 @@
         }
 
         /* Keyframes for animations */
+        @keyframes button-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .button-float-animation {
+            animation: button-float 3s ease-in-out infinite;
+        }
+
         @keyframes countdown-pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.15); }
@@ -39,8 +48,8 @@
         }
 
         @keyframes rocket-launch {
-            0% { transform: translateY(0) rotate(-45deg); opacity: 1; }
-            100% { transform: translateY(-150vh) rotate(-45deg); opacity: 0.5; }
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-150vh); opacity: 0.5; }
         }
         .rocket-launch-animation {
             animation: rocket-launch 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
@@ -62,6 +71,28 @@
             animation: product-reveal 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         
+        /* Realistic Curtain Styles */
+        .curtain {
+            background-color: #800000; /* Darker red base for curtains */
+            background-image: repeating-linear-gradient(
+                to right,
+                rgba(0,0,0,0.2) 0px,  /* Darker part of the fold */
+                rgba(0,0,0,0.2) 20px,
+                rgba(255,255,255,0.05) 20px, /* Lighter, highlighted part */
+                rgba(255,255,255,0.05) 40px
+            );
+            clip-path: url(#curtain-clip);
+        }
+
+        #left-curtain {
+            transform-origin: left;
+            box-shadow: inset -15px 0 20px -10px rgba(0,0,0,0.6);
+        }
+        #right-curtain {
+            transform-origin: right;
+            box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.6);
+        }
+
         .curtain-trim::after {
             content: '';
             position: absolute;
@@ -72,22 +103,15 @@
             box-shadow: 0 0 15px 2px #facc15;
         }
 
-        #left-curtain.curtain-trim::after {
-            right: -5px;
-        }
-
-        #right-curtain.curtain-trim::after {
-            left: -5px;
-        }
+        #left-curtain.curtain-trim::after { right: -5px; }
+        #right-curtain.curtain-trim::after { left: -5px; }
         
         @keyframes screen-shake {
             0%, 100% { transform: translateX(0); }
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
-        .screen-shake-animation {
-            animation: screen-shake 0.5s linear;
-        }
+        .screen-shake-animation { animation: screen-shake 0.5s linear; }
         
         @keyframes cracker-burst {
             0% { transform: scale(0); opacity: 1; }
@@ -95,91 +119,169 @@
             100% { transform: scale(2); opacity: 0; }
         }
         .cracker-particle {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background: white;
-            border-radius: 50%;
-            animation: cracker-burst 0.6s ease-out forwards;
+            position: absolute; width: 5px; height: 5px; background: white;
+            border-radius: 50%; animation: cracker-burst 0.6s ease-out forwards;
         }
 
         @keyframes fade-in-up {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .fade-in-up-animation {
-            animation: fade-in-up 1s ease-out forwards;
+        .fade-in-up-animation { animation: fade-in-up 0.8s ease-out forwards; }
+
+        @keyframes fade-out-down {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(30px); }
+        }
+        .fade-out-down-animation { animation: fade-out-down 0.8s ease-in forwards; }
+
+        /* Smoke Animation */
+        @keyframes smoke-plume {
+            0% { transform: scale(0.2); opacity: 0.8; }
+            100% { transform: scale(1.5) translateX(var(--smoke-x, 0px)); opacity: 0; }
+        }
+        .smoke-particle {
+            position: absolute; bottom: 0; left: 50%; width: 50px; height: 50px;
+            background: #d1d5db; border-radius: 50%;
+            animation: smoke-plume 2s ease-out forwards; filter: blur(10px);
         }
 
+        /* Enhanced Rocket Styles */
+        .rocket-body { background: linear-gradient(to right, #e5e7eb, #f9fafb, #e5e7eb); }
+        .fin {
+            position: absolute; bottom: 5px; width: 35%; height: 25%;
+            background-color: #ef4444; z-index: -1;
+        }
+        .fin-left { left: 5px; border-bottom-left-radius: 100%; transform: skewX(-20deg); }
+        .fin-right { right: 5px; border-bottom-right-radius: 100%; transform: skewX(20deg); }
+
+        /* Sky Elements */
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        /* Glitter Effect */
+        @keyframes glitter {
+            0%, 100% { transform: scale(0.5); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        .glitter-particle {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: glitter 1.5s ease-in-out infinite;
+            box-shadow: 0 0 10px #fff, 0 0 20px #fde047, 0 0 30px #0ea5e9;
+        }
+
+        /* Shine Effect for "Project Nebula" */
+        .shine-effect {
+            background: linear-gradient(90deg, #363187 40%, #ffffff 50%, #363187 60%);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 4s ease-in-out infinite;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes shine {
+            0% { background-position: 150% 0; }
+            100% { background-position: -150% 0; }
+        }
     </style>
 </head>
-<body class="text-gray-800 flex items-center justify-center h-screen">
+<audio id="celebration-audio" src="audio/celebration.mp3"></audio>
+<body class="text-[#363187] flex items-center justify-center h-screen">
+
+    <canvas id="neural-network-canvas" class="absolute top-0 left-0 w-full h-full z-0"></canvas>
+
+    <!-- SVG Definition for Curtain Shape -->
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <clipPath id="curtain-clip" clipPathUnits="objectBoundingBox">
+          <path d="M0,0 L1,0 L1,1 L0,1 Z" />
+        </clipPath>
+      </defs>
+    </svg>
 
     <!-- ARIA live region for screen reader announcements -->
     <div id="aria-live-region" class="sr-only" aria-live="assertive"></div>
 
     <!-- Main Container -->
-    <div id="main-container" class="text-center">
+    <div id="main-container" class="text-center relative z-10">
         
         <!-- Launch Button State -->
         <div id="launch-button-container">
-            <h1 class="text-4xl md:text-6xl font-black mb-4">AI Product Soft Launch</h1>
-            <p class="text-lg md:text-xl text-gray-600 mb-8">Prepare for ignition.</p>
-            <button id="launch-button" aria-label="Start the launch sequence" class="bg-blue-800 text-white font-bold text-2xl py-4 px-10 rounded-xl launch-button-glow transform hover:scale-105 transition-transform duration-300">
-                LAUNCH
+            <h1 class="text-4xl md:text-6xl font-black mb-4">Ready to Shape Tomorrow, Together?</h1>
+            <p class="text-lg md:text-xl text-[#363187] opacity-90 mb-8">The Future Is About to Unfold.</p>
+            <button id="launch-button" aria-label="Start the launch sequence" class="bg-[#363187] text-white font-bold text-2xl py-4 px-10 rounded-xl launch-button-glow transform hover:scale-105 transition-transform duration-300 button-float-animation">
+                Unveil
             </button>
         </div>
 
         <!-- Countdown State -->
         <div id="countdown-container" class="hidden">
-            <p id="countdown-timer" class="text-9xl font-black countdown-pulse-animation">10</p>
+            <p id="countdown-timer" class="text-9xl font-black countdown-pulse-animation transition-colors duration-500">10</p>
         </div>
 
         <!-- Pain Points State -->
-        <div id="pain-points-container" class="hidden space-y-8">
-            <h2 id="pain-point-1" class="text-4xl md:text-5xl font-bold opacity-0 text-gray-700">❌ Personalization Gap</h2>
-            <h2 id="pain-point-2" class="text-4xl md:text-5xl font-bold opacity-0 text-gray-700">❌ Lack of Real-Time Feedback</h2>
-            <h2 id="pain-point-3" class="text-4xl md:text-5xl font-bold opacity-0 text-gray-700">❌ Engagement Challenges</h2>
+        <div id="pain-points-container" class="hidden">
+            <h2 id="pain-point-text" class="text-3xl md:text-4xl font-bold opacity-0"></h2>
         </div>
 
+
         <!-- Product Reveal State -->
-        <div id="product-reveal-container" class="hidden text-center opacity-0">
-             <!-- Placeholder for an AI Logo -->
-            <svg class="w-24 h-24 mx-auto mb-6 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V8.25a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 8.25v7.5A2.25 2.25 0 006.75 18z" />
-            </svg>
-            <h2 class="text-5xl md:text-7xl font-black mb-2">Project Nebula</h2>
-            <p class="text-xl md:text-2xl text-gray-600">The Future of AI is Here.</p>
+        <div id="product-reveal-container" class="hidden text-center opacity-0 relative">
+            <div id="glitter-container" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+            <img src="images/logo.png" alt="Company Logo" class="mx-auto mb-6 max-w-[100px] h-auto" />
+            <h2 class="text-5xl md:text-7xl font-black mb-2 shine-effect">Chrysalis AI</h2>
+            <p class="text-xl md:text-2xl text-[#363187] opacity-90">Get set for transformation.</p>
         </div>
 
     </div>
 
     <!-- Stage Curtains -->
-    <div id="stage-curtains" class="hidden absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
-        <div id="left-curtain" class="absolute top-0 left-0 w-1/2 h-full bg-red-900 transition-transform duration-[3000ms] ease-in-out curtain-trim"></div>
-        <div id="right-curtain" class="absolute top-0 right-0 w-1/2 h-full bg-red-900 transition-transform duration-[3000ms] ease-in-out curtain-trim"></div>
+    <div id="stage-curtains" class="hidden absolute top-0 left-0 w-full h-full z-20 pointer-events-none">
+        <div id="left-curtain" class="absolute top-0 left-0 w-1/2 h-full curtain curtain-trim"></div>
+        <div id="right-curtain" class="absolute top-0 right-0 w-1/2 h-full curtain curtain-trim"></div>
+    </div>
+    
+    <!-- Launch Scene -->
+    <div id="launch-scene" class="absolute bottom-0 left-0 w-full h-full hidden z-10">
+         <div id="sky-container" class="absolute top-0 left-0 w-full h-full opacity-0 transition-opacity duration-3000"></div>
+         <div id="launchpad" class="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-4 bg-gray-700 rounded-t-lg"></div>
+         <div id="smoke-container" class="absolute bottom-0 left-0 w-full h-full pointer-events-none"></div>
     </div>
 
+
     <!-- Rocket Animation -->
-    <div id="rocket-container" class="absolute bottom-0 left-1/2 -translate-x-1/2 hidden">
-        <div id="rocket" class="w-20 h-40">
+    <div id="rocket-container" class="absolute bottom-4 left-1/2.5 -translate-x-1/2 hidden z-30">
+        <div id="rocket" class="relative w-20 h-40">
             <!-- Rocket Body -->
-            <div class="w-full h-full bg-gray-200 rounded-t-full rounded-b-lg relative clip-path-rocket">
+            <div class="rocket-body w-full h-full rounded-t-full rounded-b-lg relative clip-path-rocket">
                 <!-- Window -->
                 <div class="absolute top-10 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-400 rounded-full border-4 border-gray-400"></div>
+                 <!-- Stripe -->
+                <div class="absolute bottom-1/4 w-full h-4 bg-red-500"></div>
             </div>
+             <!-- Fins -->
+            <div class="fin fin-left"></div>
+            <div class="fin fin-right"></div>
             <!-- Flame -->
-            <div id="flame" class="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-8 h-12 bg-yellow-400 rounded-b-full opacity-0"></div>
+            <div id="flame" class="absolute bottom-[-20px] left-1/3 -translate-x-1/2 w-8 h-12 bg-yellow-400 rounded-b-full opacity-0 z-[-1]"></div>
         </div>
     </div>
     
     <!-- Effects Container -->
-    <div id="effects-container" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
-
-    <!-- Confetti Canvas -->
-    <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none z-20"></canvas>
-
-
+    <div id="effects-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-40"></div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Elements
@@ -193,6 +295,92 @@
             const effectsContainer = document.getElementById('effects-container');
             const ariaLiveRegion = document.getElementById('aria-live-region');
             const painPointsContainer = document.getElementById('pain-points-container');
+            const painPointText = document.getElementById('pain-point-text');
+            const launchScene = document.getElementById('launch-scene');
+            const skyContainer = document.getElementById('sky-container');
+            const smokeContainer = document.getElementById('smoke-container');
+            const leftCurtain = document.getElementById('left-curtain');
+            const rightCurtain = document.getElementById('right-curtain');
+            const celebrationAudio = document.getElementById('celebration-audio');
+
+            // --- Neural Network Canvas ---
+            const networkCanvas = document.getElementById('neural-network-canvas');
+            const ctx = networkCanvas.getContext('2d');
+            let particlesArray;
+
+            function resizeCanvas() {
+                networkCanvas.width = window.innerWidth;
+                networkCanvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initParticles();
+            });
+
+            class Particle {
+                constructor(x, y, directionX, directionY, size) {
+                    this.x = x; this.y = y;
+                    this.directionX = directionX; this.directionY = directionY;
+                    this.size = size;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.fill();
+                }
+                update() {
+                    if (this.x > networkCanvas.width || this.x < 0) { this.directionX = -this.directionX; }
+                    if (this.y > networkCanvas.height || this.y < 0) { this.directionY = -this.directionY; }
+                    this.x += this.directionX;
+                    this.y += this.directionY;
+                    this.draw();
+                }
+            }
+
+            function initParticles() {
+                particlesArray = [];
+                let numberOfParticles = (networkCanvas.height * networkCanvas.width) / 12000;
+                for (let i = 0; i < numberOfParticles; i++) {
+                    let size = (Math.random() * 2) + 1;
+                    let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                    let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                    let directionX = (Math.random() * .4) - .2;
+                    let directionY = (Math.random() * .4) - .2;
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size));
+                }
+            }
+
+            function connectParticles() {
+                for (let a = 0; a < particlesArray.length; a++) {
+                    for (let b = a; b < particlesArray.length; b++) {
+                        let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+                                     + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                        if (distance < (networkCanvas.width / 8) * (networkCanvas.height / 8)) {
+                            let opacityValue = 1 - (distance / 20000);
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${opacityValue})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animateNetwork() {
+                requestAnimationFrame(animateNetwork);
+                ctx.clearRect(0, 0, innerWidth, innerHeight);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                }
+                connectParticles();
+            }
+
+            resizeCanvas();
+            initParticles();
+            animateNetwork();
 
             // --- Audio Synthesis with Tone.js ---
             const tickSynth = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, envelope: { attack: 0.001, decay: 0.2, sustain: 0 }, }).toDestination();
@@ -211,11 +399,25 @@
             const reverb = new Tone.Reverb(0.5).toDestination();
             painPointSynth.connect(reverb);
             
-            // --- Confetti Initialization ---
-            const confettiInstance = confetti.create(document.getElementById('confetti-canvas'), { resize: true, useWorker: true });
-
             // --- Core Functions ---
             const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+            function populateSky() {
+                // Create Stars
+                for (let i = 0; i < 50; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    const size = Math.random() * 2 + 1;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.animationDelay = `${Math.random() * 2}s`;
+                    skyContainer.appendChild(star);
+                }
+            }
+            populateSky();
+
 
             async function startCountdown() {
                 countdownContainer.classList.remove('hidden');
@@ -227,6 +429,8 @@
                 for (let count = 10; count > 0; count--) {
                     countdownTimer.textContent = count;
                     ariaLiveRegion.textContent = count;
+                    if (count <= 3) { countdownTimer.style.color = '#ef4444'; } 
+                    else if (count <= 6) { countdownTimer.style.color = '#f59e0b'; }
                     tickSynth.triggerAttackRelease("C4", "8n");
                     await wait(1000);
                 }
@@ -237,10 +441,30 @@
                 countdownContainer.classList.add('hidden');
             }
             
+            function generateSmoke() {
+                const smokeInterval = setInterval(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'smoke-particle';
+                    const xOffset = (Math.random() - 0.5 -.2) * 150;
+                    particle.style.setProperty('--smoke-x', `${xOffset}px`);
+                    particle.style.animationDuration = `${Math.random() * 1 + 1.5}s`;
+                    smokeContainer.appendChild(particle);
+
+                    setTimeout(() => particle.remove(), 2000);
+                }, 50);
+
+                setTimeout(() => clearInterval(smokeInterval), 2000);
+            }
+
             async function launchRocket() {
+                launchScene.classList.remove('hidden');
+                skyContainer.style.opacity = '1';
+
                 rocketContainer.classList.remove('hidden');
                 flame.classList.add('flame-flicker-animation');
                 flame.style.opacity = '1';
+
+                generateSmoke();
                 
                 document.body.classList.add('screen-shake-animation');
                 document.body.addEventListener('animationend', () => {
@@ -251,25 +475,38 @@
                 whooshSynth.envelope.decay = 2.5;
                 filter.frequency.rampTo(2000, 3);
                 
-                document.getElementById('rocket').classList.add('rocket-launch-animation');
+                document.getElementById('rocket-container').classList.add('rocket-launch-animation');
                 
                 await wait(4000);
                 whooshSynth.triggerRelease();
+                launchScene.classList.add('hidden');
             }
 
             async function showPainPoints() {
                 painPointsContainer.classList.remove('hidden');
-                const points = Array.from(painPointsContainer.children);
+                const points = [
+                    'Reports that Speak.',
+                    'Guidance that Fits.',
+                    'Progress, Made Visible.'
+                ];
+                const notes = ['C3', 'D3', 'E3'];
+                await wait(1000); // ⏱ small delay before first pain point appears
 
-                for (const point of points) {
-                    await wait(points.indexOf(point) === 0 ? 500 : 2000);
-                    point.classList.add('fade-in-up-animation');
-                    ariaLiveRegion.textContent = point.textContent;
-                    const note = ['C3', 'D3', 'E3'][points.indexOf(point)];
-                    painPointSynth.triggerAttackRelease(note, "4n");
+                for (let i = 0; i < points.length; i++) {
+                    painPointText.innerHTML = points[i];
+                    ariaLiveRegion.textContent = points[i];
+                    painPointText.classList.remove('fade-out-down-animation');
+                    painPointText.classList.add('fade-in-up-animation');
+                    painPointSynth.triggerAttackRelease(notes[i], "4n");
+
+                    await wait(2500); // Time to read the point
+
+                    painPointText.classList.remove('fade-in-up-animation');
+                    painPointText.classList.add('fade-out-down-animation');
+
+                    await wait(800); // Time for fade out animation
                 }
-
-                await wait(2500);
+                
                 painPointsContainer.classList.add('hidden');
             }
 
@@ -278,27 +515,47 @@
                 stageCurtains.classList.remove('hidden');
                 curtainSwooshSynth.triggerAttackRelease("2n");
 
+                const transitionStyle = 'transform 3000ms cubic-bezier(0.65, 0, 0.35, 1)';
+                leftCurtain.style.transition = transitionStyle;
+                rightCurtain.style.transition = transitionStyle;
+
                 await wait(100);
-                document.getElementById('left-curtain').style.transform = 'translateX(-100%)';
-                document.getElementById('right-curtain').style.transform = 'translateX(100%)';
+                
+                leftCurtain.style.transform = 'translateX(-100%) scaleX(0.1)';
+                rightCurtain.style.transform = 'translateX(100%) scaleX(0.1)';
 
                 await wait(3000);
             }
             
-            function revealProduct() {
+            function createGlitter() {
+                const glitterContainer = document.getElementById('glitter-container');
+                if (!glitterContainer) return;
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'glitter-particle';
+                    const size = Math.random() * 4 + 1;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.top = `${Math.random() * 100}%`;
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.animationDelay = `${Math.random() * 1.5}s`;
+                    glitterContainer.appendChild(particle);
+                }
+            }
+            
+            async function revealProduct() {
                 productRevealContainer.classList.remove('hidden');
                 productRevealContainer.classList.add('product-reveal-animation');
                 ariaLiveRegion.textContent = 'Product Revealed: Project Nebula.';
                 
-                const startTime = Tone.now() + 0.1; // Increased buffer for safety
+                const startTime = Tone.now() + 0.1;
                 fanfareSynth.triggerAttackRelease(["C4", "E4", "G4", "C5"], "2n", startTime);
-                
-                // Create an array of sorted random times for applause to prevent scheduling errors
+
                 const applauseTimes = [];
                 for (let i = 0; i < 70; i++) {
                     applauseTimes.push(startTime + (Math.random() * 2.5));
                 }
-                applauseTimes.sort(); // Ensure times are in ascending order
+                applauseTimes.sort();
 
                 for (const time of applauseTimes) {
                     applauseCrowd.triggerAttackRelease("32n", time);
@@ -306,6 +563,10 @@
 
                 createCrackers(startTime);
                 fireConfetti();
+                createGlitter();
+                // 🔊 Play local MP3 after everything
+                celebrationAudio.currentTime = 0;
+                celebrationAudio.play().catch(err => console.log("Audio play blocked:", err));
             }
 
             function createCrackers(startTime) {
@@ -317,19 +578,15 @@
                         visualDelay: delay * 1000
                     });
                 }
-
-                // Sort events to ensure they are scheduled in chronological order
                 crackerEvents.sort((a, b) => a.audioTime - b.audioTime);
 
                 crackerEvents.forEach(event => {
                     crackerSynth.triggerAttackRelease("16n", event.audioTime);
-
                     setTimeout(() => {
                         const burstContainer = document.createElement('div');
                         burstContainer.style.position = 'absolute';
                         burstContainer.style.left = `${Math.random() * 80 + 10}%`;
                         burstContainer.style.top = `${Math.random() * 70 + 15}%`;
-
                         for (let j = 0; j < 15; j++) {
                             const p = document.createElement('div');
                             p.className = 'cracker-particle';
@@ -348,11 +605,11 @@
             function fireConfetti() {
                 const duration = 2 * 1000;
                 const end = Date.now() + duration;
-                const colors = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42'];
+                const colors = ['#26ccff', '#a2afd', '#ff5e7e', '#88ff5a', '#fcff42'];
 
                 (function frame() {
-                    confettiInstance({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
-                    confettiInstance({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+                    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+                    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
                     if (Date.now() < end) requestAnimationFrame(frame);
                 }());
             }
@@ -360,15 +617,16 @@
             // --- Main Animation Sequence ---
             async function mainSequence() {
                 await wait(500);
-                await showPainPoints();
                 await startCountdown();
                 await launchRocket();
+                await showPainPoints();
                 await openStageCurtains();
                 revealProduct();
             }
 
             // --- Event Listener ---
             launchButton.addEventListener('click', async () => {
+                launchButton.classList.remove('button-float-animation');
                 await Tone.start();
                 launchContainer.classList.add('hidden');
                 mainSequence();
