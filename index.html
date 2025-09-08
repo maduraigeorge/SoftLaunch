@@ -1,251 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Product Launch with Rocket & Butterflies (Improved)</title>
-<style>
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    background: linear-gradient(135deg, #d6c1ff 0%, #a2cfff 100%);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #3b2e75;
-    overflow-x: hidden;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center;
-  }
-  h1#ready-text {
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin-bottom: 2rem;
-    user-select: none;
-  }
-  #launch-btn {
-    font-size: 2.5rem;
-    padding: 1em 3em;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    color: white;
-    background: linear-gradient(135deg, #7a9cff, #aab8ff);
-    box-shadow: 0 0 25px #7a9cff;
-    animation: popIn 1s ease forwards;
-    user-select: none;
-  }
-  #launch-btn:hover {
-    box-shadow: 0 0 40px #7a9cff;
-  }
-  @keyframes popIn {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  #countdown {
-    font-size: clamp(4rem, 10vw, 6rem);
-    font-weight: 900;
-    color: #3b2e75;
-    display: none;
-    margin: 1rem 0 2rem 0;
-    user-select: none;
-  }
-  #animation-container {
-    width: 300px; height: 300px;
-    margin: 20px 0;
-    display: none;
-    pointer-events: none;
-  }
-  #product-reveal {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    margin-top: 20px;
-    opacity: 0;
-    transition: opacity 1.5s ease;
-  }
-  #product-reveal img {
-    width: 200px;
-    user-select: none;
-  }
-  #product-reveal h2 {
-    color: #3b2e75;
-    font-size: clamp(2rem, 5vw, 3rem);
-    user-select: none;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI App Soft Launch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevent scrollbars during animations */
+            background: linear-gradient(125deg, #e0c3fc 0%, #8ec5fc 100%);
+        }
+
+        /* Glow effect for the launch button */
+        .launch-button-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .launch-button-glow:hover {
+            box-shadow: 0 0 35px rgba(59, 130, 246, 0.7);
+        }
+
+        /* Define the rocket shape */
+        .clip-path-rocket {
+            clip-path: polygon(50% 0%, 100% 75%, 100% 100%, 0 100%, 0 75%);
+        }
+
+        /* Keyframes for animations */
+        @keyframes countdown-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        .countdown-pulse-animation {
+            animation: countdown-pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes rocket-launch {
+            0% { transform: translateY(0) rotate(-45deg); opacity: 1; }
+            100% { transform: translateY(-150vh) rotate(-45deg); opacity: 0.5; }
+        }
+        .rocket-launch-animation {
+            animation: rocket-launch 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
+        }
+        
+        @keyframes flame-flicker {
+            0%, 100% { transform: scale(1, 1); background-color: #fbbf24; }
+            50% { transform: scale(1.1, 1.2); background-color: #f59e0b; }
+        }
+        .flame-flicker-animation {
+            animation: flame-flicker 0.1s linear infinite;
+        }
+
+        @keyframes product-reveal {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .product-reveal-animation {
+            animation: product-reveal 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        
+        .curtain-trim::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 10px;
+            height: 100%;
+            background: linear-gradient(#fde047, #eab308, #fde047);
+            box-shadow: 0 0 15px 2px #facc15;
+        }
+
+        #left-curtain.curtain-trim::after {
+            right: -5px;
+        }
+
+        #right-curtain.curtain-trim::after {
+            left: -5px;
+        }
+        
+        @keyframes screen-shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .screen-shake-animation {
+            animation: screen-shake 0.5s linear;
+        }
+        
+        @keyframes cracker-burst {
+            0% { transform: scale(0); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .cracker-particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: white;
+            border-radius: 50%;
+            animation: cracker-burst 0.6s ease-out forwards;
+        }
+
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up-animation {
+            animation: fade-in-up 1s ease-out forwards;
+        }
+
+    </style>
 </head>
-<body>
+<body class="text-gray-800 flex items-center justify-center h-screen">
 
-  <h1 id="ready-text">Ready for the Big Reveal?</h1>
+    <!-- ARIA live region for screen reader announcements -->
+    <div id="aria-live-region" class="sr-only" aria-live="assertive"></div>
 
-  <button id="launch-btn" aria-label="Launch Product">Launch</button>
+    <!-- Main Container -->
+    <div id="main-container" class="text-center">
+        
+        <!-- Launch Button State -->
+        <div id="launch-button-container">
+            <h1 class="text-4xl md:text-6xl font-black mb-4">AI Product Soft Launch</h1>
+            <p class="text-lg md:text-xl text-gray-600 mb-8">Prepare for ignition.</p>
+            <button id="launch-button" aria-label="Start the launch sequence" class="bg-blue-800 text-white font-bold text-2xl py-4 px-10 rounded-xl launch-button-glow transform hover:scale-105 transition-transform duration-300">
+                LAUNCH
+            </button>
+        </div>
 
-  <div id="countdown" aria-live="assertive" aria-atomic="true"></div>
+        <!-- Countdown State -->
+        <div id="countdown-container" class="hidden">
+            <p id="countdown-timer" class="text-9xl font-black countdown-pulse-animation">10</p>
+        </div>
 
-  <div id="animation-container" aria-live="off" aria-hidden="true"></div>
+        <!-- Pain Points State -->
+        <div id="pain-points-container" class="hidden space-y-8">
+            <h2 id="pain-point-1" class="text-4xl md:text-5xl font-bold opacity-0 text-gray-700">❌ Personalization Gap</h2>
+            <h2 id="pain-point-2" class="text-4xl md:text-5xl font-bold opacity-0 text-gray-700">❌ Lack of Real-Time Feedback</h2>
+            <h2 id="pain-point-3" class="text-4xl md:text-5xl font-bold opacity-0 text-gray-700">❌ Engagement Challenges</h2>
+        </div>
 
-  <div id="product-reveal" role="region" aria-label="Product Reveal">
-    <img src="images/productX-logo.png" alt="Product X Logo and Text" />
-    <h2>Product X</h2>
-  </div>
+        <!-- Product Reveal State -->
+        <div id="product-reveal-container" class="hidden text-center opacity-0">
+             <!-- Placeholder for an AI Logo -->
+            <svg class="w-24 h-24 mx-auto mb-6 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V8.25a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 8.25v7.5A2.25 2.25 0 006.75 18z" />
+            </svg>
+            <h2 class="text-5xl md:text-7xl font-black mb-2">Project Nebula</h2>
+            <p class="text-xl md:text-2xl text-gray-600">The Future of AI is Here.</p>
+        </div>
 
-  <audio id="countdown-audio" src="audio/countdown_tick.mp3" preload="auto"></audio>
-  <audio id="suspense-audio" src="audio/suspense.mp3" preload="auto"></audio>
-  <audio id="applause-audio" src="audio/applause.mp3" preload="auto"></audio>
+    </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.0/lottie.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Stage Curtains -->
+    <div id="stage-curtains" class="hidden absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
+        <div id="left-curtain" class="absolute top-0 left-0 w-1/2 h-full bg-red-900 transition-transform duration-[3000ms] ease-in-out curtain-trim"></div>
+        <div id="right-curtain" class="absolute top-0 right-0 w-1/2 h-full bg-red-900 transition-transform duration-[3000ms] ease-in-out curtain-trim"></div>
+    </div>
 
-  <script>
-    (() => {
-      const launchBtn = document.getElementById('launch-btn');
-      const readyText = document.getElementById('ready-text');
-      const countdownEl = document.getElementById('countdown');
-      const animationContainer = document.getElementById('animation-container');
-      const productReveal = document.getElementById('product-reveal');
+    <!-- Rocket Animation -->
+    <div id="rocket-container" class="absolute bottom-0 left-1/2 -translate-x-1/2 hidden">
+        <div id="rocket" class="w-20 h-40">
+            <!-- Rocket Body -->
+            <div class="w-full h-full bg-gray-200 rounded-t-full rounded-b-lg relative clip-path-rocket">
+                <!-- Window -->
+                <div class="absolute top-10 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-400 rounded-full border-4 border-gray-400"></div>
+            </div>
+            <!-- Flame -->
+            <div id="flame" class="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-8 h-12 bg-yellow-400 rounded-b-full opacity-0"></div>
+        </div>
+    </div>
+    
+    <!-- Effects Container -->
+    <div id="effects-container" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
 
-      const countdownAudio = document.getElementById('countdown-audio');
-      const suspenseAudio = document.getElementById('suspense-audio');
-      const applauseAudio = document.getElementById('applause-audio');
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none z-20"></canvas>
 
-      let animation = null;
-      let confettiAnimationId = null;
 
-      async function playAudio(audio) {
-        if (!audio) return;
-        audio.currentTime = 0;
-        try {
-          await audio.play();
-          return true;
-        } catch (e) {
-          console.warn("Audio playback error:", e);
-          return false;
-        }
-      }
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const launchButton = document.getElementById('launch-button');
+            const launchContainer = document.getElementById('launch-button-container');
+            const countdownContainer = document.getElementById('countdown-container');
+            const countdownTimer = document.getElementById('countdown-timer');
+            const productRevealContainer = document.getElementById('product-reveal-container');
+            const rocketContainer = document.getElementById('rocket-container');
+            const flame = document.getElementById('flame');
+            const effectsContainer = document.getElementById('effects-container');
+            const ariaLiveRegion = document.getElementById('aria-live-region');
+            const painPointsContainer = document.getElementById('pain-points-container');
 
-      function pauseAudio(audio) {
-        if (!audio) return;
-        try {
-          audio.pause();
-        } catch {}
-      }
+            // --- Audio Synthesis with Tone.js ---
+            const tickSynth = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, envelope: { attack: 0.001, decay: 0.2, sustain: 0 }, }).toDestination();
+            const whooshSynth = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.05, decay: 1.5, sustain: 0.1, release: 2 }, }).toDestination();
+            const filter = new Tone.AutoFilter("4n").toDestination().start();
+            whooshSynth.connect(filter);
+            const suspenseSynth = new Tone.AMSynth({ harmonicity: 1.5, envelope: { attack: 0.1, decay: 0.2, sustain: 0.1, release: 0.5 }, modulation: { type: "sine" }, modulationEnvelope: { attack: 0.5, decay: 0.01 } }).toDestination();
+            const suspenseLoop = new Tone.Loop(time => { suspenseSynth.triggerAttackRelease("C2", "8n", time); }, "4n");
+            const fanfareSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: "fatsawtooth" }, envelope: { attack: 0.01, decay: 1, sustain: 0.2, release: 1 }, }).toDestination();
+            const applauseCrowd = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination();
+            const applauseReverb = new Tone.Reverb(2.5).toDestination();
+            applauseCrowd.connect(applauseReverb);
+            const crackerSynth = new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }, }).toDestination();
+            const curtainSwooshSynth = new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.1, decay: 1.5, sustain: 0, release: 1 }, }).toDestination();
+            const painPointSynth = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.3, sustain: 0.1, release: 0.3 }, }).toDestination();
+            const reverb = new Tone.Reverb(0.5).toDestination();
+            painPointSynth.connect(reverb);
+            
+            // --- Confetti Initialization ---
+            const confettiInstance = confetti.create(document.getElementById('confetti-canvas'), { resize: true, useWorker: true });
 
-      function delay(ms) {
-        return new Promise(r => setTimeout(r, ms));
-      }
+            // --- Core Functions ---
+            const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-      async function countdown(seconds) {
-        countdownEl.style.display = 'block';
-        for(let i = seconds; i > 0; i--) {
-          countdownEl.textContent = `Countdown: ${i}`;
-          playAudio(countdownAudio);
-          await delay(1000);
-        }
-        countdownEl.style.display = 'none';
-      }
+            async function startCountdown() {
+                countdownContainer.classList.remove('hidden');
+                ariaLiveRegion.textContent = 'Countdown initiated.';
+                
+                Tone.Transport.start();
+                suspenseLoop.start(0);
 
-      function playLottieAnimation(path, loop=false) {
-        if(animation) animation.destroy();
-        animation = lottie.loadAnimation({
-          container: animationContainer,
-          renderer: 'svg',
-          loop,
-          autoplay: true,
-          path: path
+                for (let count = 10; count > 0; count--) {
+                    countdownTimer.textContent = count;
+                    ariaLiveRegion.textContent = count;
+                    tickSynth.triggerAttackRelease("C4", "8n");
+                    await wait(1000);
+                }
+                
+                ariaLiveRegion.textContent = 'Liftoff!';
+                suspenseLoop.stop();
+                Tone.Transport.stop();
+                countdownContainer.classList.add('hidden');
+            }
+            
+            async function launchRocket() {
+                rocketContainer.classList.remove('hidden');
+                flame.classList.add('flame-flicker-animation');
+                flame.style.opacity = '1';
+                
+                document.body.classList.add('screen-shake-animation');
+                document.body.addEventListener('animationend', () => {
+                    document.body.classList.remove('screen-shake-animation');
+                }, { once: true });
+
+                whooshSynth.triggerAttack();
+                whooshSynth.envelope.decay = 2.5;
+                filter.frequency.rampTo(2000, 3);
+                
+                document.getElementById('rocket').classList.add('rocket-launch-animation');
+                
+                await wait(4000);
+                whooshSynth.triggerRelease();
+            }
+
+            async function showPainPoints() {
+                painPointsContainer.classList.remove('hidden');
+                const points = Array.from(painPointsContainer.children);
+
+                for (const point of points) {
+                    await wait(points.indexOf(point) === 0 ? 500 : 2000);
+                    point.classList.add('fade-in-up-animation');
+                    ariaLiveRegion.textContent = point.textContent;
+                    const note = ['C3', 'D3', 'E3'][points.indexOf(point)];
+                    painPointSynth.triggerAttackRelease(note, "4n");
+                }
+
+                await wait(2500);
+                painPointsContainer.classList.add('hidden');
+            }
+
+            async function openStageCurtains() {
+                const stageCurtains = document.getElementById('stage-curtains');
+                stageCurtains.classList.remove('hidden');
+                curtainSwooshSynth.triggerAttackRelease("2n");
+
+                await wait(100);
+                document.getElementById('left-curtain').style.transform = 'translateX(-100%)';
+                document.getElementById('right-curtain').style.transform = 'translateX(100%)';
+
+                await wait(3000);
+            }
+            
+            function revealProduct() {
+                productRevealContainer.classList.remove('hidden');
+                productRevealContainer.classList.add('product-reveal-animation');
+                ariaLiveRegion.textContent = 'Product Revealed: Project Nebula.';
+                
+                const startTime = Tone.now() + 0.1; // Increased buffer for safety
+                fanfareSynth.triggerAttackRelease(["C4", "E4", "G4", "C5"], "2n", startTime);
+                
+                // Create an array of sorted random times for applause to prevent scheduling errors
+                const applauseTimes = [];
+                for (let i = 0; i < 70; i++) {
+                    applauseTimes.push(startTime + (Math.random() * 2.5));
+                }
+                applauseTimes.sort(); // Ensure times are in ascending order
+
+                for (const time of applauseTimes) {
+                    applauseCrowd.triggerAttackRelease("32n", time);
+                }
+
+                createCrackers(startTime);
+                fireConfetti();
+            }
+
+            function createCrackers(startTime) {
+                const crackerEvents = [];
+                for (let i = 0; i < 5; i++) {
+                    const delay = Math.random() * 0.5;
+                    crackerEvents.push({
+                        audioTime: startTime + delay,
+                        visualDelay: delay * 1000
+                    });
+                }
+
+                // Sort events to ensure they are scheduled in chronological order
+                crackerEvents.sort((a, b) => a.audioTime - b.audioTime);
+
+                crackerEvents.forEach(event => {
+                    crackerSynth.triggerAttackRelease("16n", event.audioTime);
+
+                    setTimeout(() => {
+                        const burstContainer = document.createElement('div');
+                        burstContainer.style.position = 'absolute';
+                        burstContainer.style.left = `${Math.random() * 80 + 10}%`;
+                        burstContainer.style.top = `${Math.random() * 70 + 15}%`;
+
+                        for (let j = 0; j < 15; j++) {
+                            const p = document.createElement('div');
+                            p.className = 'cracker-particle';
+                            const angle = Math.random() * 360;
+                            const distance = Math.random() * 50 + 20;
+                            p.style.transform = `rotate(${angle}deg) translateX(${distance}px)`;
+                            p.style.background = ['#ffd700', '#ff69b4', '#00ffff'][Math.floor(Math.random() * 3)];
+                            burstContainer.appendChild(p);
+                        }
+                        effectsContainer.appendChild(burstContainer);
+                        setTimeout(() => burstContainer.remove(), 1000);
+                    }, event.visualDelay);
+                });
+            }
+
+            function fireConfetti() {
+                const duration = 2 * 1000;
+                const end = Date.now() + duration;
+                const colors = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42'];
+
+                (function frame() {
+                    confettiInstance({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+                    confettiInstance({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+                    if (Date.now() < end) requestAnimationFrame(frame);
+                }());
+            }
+
+            // --- Main Animation Sequence ---
+            async function mainSequence() {
+                await wait(500);
+                await showPainPoints();
+                await startCountdown();
+                await launchRocket();
+                await openStageCurtains();
+                revealProduct();
+            }
+
+            // --- Event Listener ---
+            launchButton.addEventListener('click', async () => {
+                await Tone.start();
+                launchContainer.classList.add('hidden');
+                mainSequence();
+            }, { once: true });
         });
-        animationContainer.style.display = 'block';
-      }
-
-      function stopLottieAnimation() {
-        if(animation) {
-          animation.destroy();
-          animation = null;
-        }
-        animationContainer.style.display = 'none';
-      }
-
-      // Monitor animation load to reliably get totalFrames
-      function waitForDataReady(anim) {
-        return new Promise(resolve => {
-          if(anim.isLoaded) resolve();
-          else anim.addEventListener('data_ready', resolve);
-        });
-      }
-
-      async function launchSequence() {
-        launchBtn.disabled = true;
-        launchBtn.style.display = 'none';
-        readyText.style.display = 'none';
-
-        // 1. Countdown
-        await countdown(10);
-
-        // 2. Suspense music + butterfly animation
-        const butterfliesPath = 'https://assets9.lottiefiles.com/packages/lf20_butterfly.json';
-        playLottieAnimation(butterfliesPath, true);
-        await playAudio(suspenseAudio);
-
-        // Wait until butterfly is done (let's say 7s), then fade out suspense
-        await delay(7000);
-        pauseAudio(suspenseAudio);
-        stopLottieAnimation();
-
-        // 3. Rocket animation
-        const rocketPath = 'https://assets9.lottiefiles.com/packages/lf20_z4p6qhsy.json';
-        playLottieAnimation(rocketPath, false);
-        await waitForDataReady(animation);
-
-        // Pause animation at 50%
-        function pauseAtHalf() {
-          if(animation.currentFrame >= animation.totalFrames / 2) {
-            animation.pause();
-            animation.removeEventListener('enterFrame', pauseAtHalf);
-            revealProduct();
-          }
-        }
-        animation.addEventListener('enterFrame', pauseAtHalf);
-
-        // Safety timeout 10s in case animation stuck
-        setTimeout(() => {
-          if(animation) {
-            animation.pause();
-            animation.removeEventListener('enterFrame', pauseAtHalf);
-            revealProduct();
-          }
-        }, 10000);
-      }
-
-      async function revealProduct() {
-        stopLottieAnimation();
-        productReveal.style.display = 'flex';
-        productReveal.style.opacity = '1';
-        await playAudio(applauseAudio);
-        startConfetti();
-      }
-
-      function startConfetti() {
-        const duration = 4000;
-        const end = Date.now() + duration;
-        const defaults = { startVelocity: 40, spread: 360, ticks: 60, zIndex: 1000 };
-
-        function frame() {
-          confetti({...defaults, particleCount: 10, origin: { x: Math.random() } });
-          if (Date.now() < end) {
-            confettiAnimationId = requestAnimationFrame(frame);
-          }
-        }
-        frame();
-      }
-
-      function stopConfetti() {
-        if(confettiAnimationId) {
-          cancelAnimationFrame(confettiAnimationId);
-          confettiAnimationId = null;
-        }
-      }
-
-      launchBtn.addEventListener('click', () => {
-        stopConfetti();
-        launchSequence().catch(e => console.error("Launch sequence error:", e));
-      });
-    })();
-  </script>
+    </script>
 </body>
 </html>
+
