@@ -2,51 +2,103 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Product Launch with Countdown and Celebration</title>
+  <title>Product Launch with Curtain Reveal and Celebration</title>
   <style>
     body {
       font-family: sans-serif;
-      text-align: center;
       background: #111;
       color: #fff;
+      margin: 0;
       overflow-x: hidden;
+      text-align: center;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     #launch-btn {
       font-size: 2rem;
-      padding: 1em 2em;
-      margin-top: 100px;
+      padding: 1em 3em;
+      margin-top: 20px;
       background: #f39c12;
       color: #fff;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: background 0.2s;
+      z-index: 10;
     }
     #launch-btn:hover {
       background: #d35400;
     }
     #countdown {
       font-size: 6rem;
-      margin-top: 50px;
-      display: none;
       font-weight: bold;
-    }
-    #reveal {
+      margin-top: 20px;
       display: none;
+      z-index: 10;
+    }
+    #stage {
+      position: relative;
+      width: 80vw;
+      height: 300px;
       margin-top: 40px;
-      animation: stageOpen 1.5s ease forwards;
+      overflow: hidden;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: #222;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(243, 156, 18, 0.7);
+    }
+    #product-text {
       font-size: 2.5rem;
+      font-weight: bold;
+      color: #f39c12;
+      opacity: 0;
+      z-index: 5;
+      transition: opacity 1s ease 1.5s;
     }
-    @keyframes stageOpen {
-      0% {
-        transform: scaleY(0);
-        opacity: 0;
-      }
-      100% {
-        transform: scaleY(1);
-        opacity: 1;
-      }
+    .curtain {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(45deg, #b5651d, #873e03);
+      box-shadow: inset 0 0 40px #4e2700;
+      transform-origin: center;
+      z-index: 10;
     }
+    #curtain-left {
+      left: 0;
+      border-top-left-radius: 12px;
+      border-bottom-left-radius: 12px;
+    }
+    #curtain-right {
+      right: 0;
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+
+    /* Curtain open animations */
+    @keyframes openLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    @keyframes openRight {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(100%); }
+    }
+
+    #curtain-left.open {
+      animation: openLeft 1.5s forwards ease;
+    }
+    #curtain-right.open {
+      animation: openRight 1.5s forwards ease;
+    }
+
+    /* Confetti canvas */
     #confetti-canvas {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -61,8 +113,10 @@
 
   <div id="countdown"></div>
 
-  <div id="reveal">
-    🎉 Here’s the Product! 🎉
+  <div id="stage">
+    <div id="curtain-left" class="curtain"></div>
+    <div id="curtain-right" class="curtain"></div>
+    <div id="product-text">Chrysalis AI</div>
   </div>
 
   <!-- Audio elements -->
@@ -80,7 +134,10 @@
     const celebrationAudio = document.getElementById('celebration-audio');
     const launchBtn = document.getElementById('launch-btn');
     const countdownEl = document.getElementById('countdown');
-    const revealEl = document.getElementById('reveal');
+    const stage = document.getElementById('stage');
+    const curtainLeft = document.getElementById('curtain-left');
+    const curtainRight = document.getElementById('curtain-right');
+    const productText = document.getElementById('product-text');
 
     // Play suspense audio initially
     suspenseAudio.volume = 0.6;
@@ -94,7 +151,7 @@
 
       // Show countdown
       countdownEl.style.display = 'block';
-      let count = 3;
+      let count = 10;
       while (count > 0) {
         countdownEl.textContent = count;
         countdownAudio.currentTime = 0;
@@ -104,15 +161,21 @@
       }
       countdownEl.style.display = 'none';
 
-      // Play stage open sound and reveal stage with animation
-      stageOpenAudio.play();
-      revealEl.style.display = 'block';
+      // Show stage and start curtain open animation
+      stage.style.display = 'flex';
+      curtainLeft.classList.add('open');
+      curtainRight.classList.add('open');
 
-      // Wait for stage open sound to complete (~1.5s), then play celebration
-      stageOpenAudio.onended = () => {
+      // Play stage open sound
+      stageOpenAudio.currentTime = 0;
+      stageOpenAudio.play();
+
+      // After curtain animation ends (1.5s), fade in product text and play celebration
+      setTimeout(() => {
+        productText.style.opacity = 1;
         celebrationAudio.play();
         fireConfetti();
-      };
+      }, 1500);
     };
 
     // Confetti function for 3 seconds
