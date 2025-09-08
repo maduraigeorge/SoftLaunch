@@ -16,13 +16,26 @@
             transition: background 2s ease-in-out;
         }
 
-        /* Glow effect for the launch button */
-        .launch-button-glow {
-            box-shadow: 0 0 15px rgba(54, 49, 135, 0);
-            transition: box-shadow 0.3s ease-in-out;
+        /* Prompt Input Styles */
+        #prompt-input {
+            width: 350px;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid rgba(54, 49, 135, 0.4);
+            background-color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            font-size: 1.1rem;
+            color: #363187;
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.2s ease-in-out;
         }
-        .launch-button-glow:hover {
-            box-shadow: 0 0 35px rgba(54, 49, 135, 0.7);
+        #prompt-input::placeholder {
+            color: rgba(54, 49, 135, 0.5);
+        }
+        #prompt-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
         }
 
         /* Define the rocket shape */
@@ -218,12 +231,13 @@
     <div id="main-container" class="text-center relative z-10">
         
         <!-- Launch Button State -->
-        <div id="launch-button-container">
-            <h1 class="text-4xl md:text-6xl font-black mb-4">Ready to Shape Tomorrow, Together?</h1>
+        <div id="launch-container" class="flex flex-col items-center">
+            <h1 class="text-4xl md:text-6xl font-black mb-4">
+Ready to Shape Tomorrow, Together?</h1>
             <p class="text-lg md:text-xl text-[#363187] opacity-90 mb-8">The Future Is About to Unfold.</p>
-            <button id="launch-button" aria-label="Start the launch sequence" class="bg-[#363187] text-white font-bold text-2xl py-4 px-10 rounded-xl launch-button-glow transform hover:scale-105 transition-transform duration-300 button-float-animation">
-                Unveil
-            </button>
+            <form id="prompt-form" class="flex flex-col items-center">
+                <input type="text" id="prompt-input" placeholder="Enter the prompt to unveil">
+            </form>
         </div>
 
         <!-- Countdown State -->
@@ -286,7 +300,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Elements
             const launchButton = document.getElementById('launch-button');
-            const launchContainer = document.getElementById('launch-button-container');
             const countdownContainer = document.getElementById('countdown-container');
             const countdownTimer = document.getElementById('countdown-timer');
             const productRevealContainer = document.getElementById('product-reveal-container');
@@ -625,12 +638,19 @@
             }
 
             // --- Event Listener ---
-            launchButton.addEventListener('click', async () => {
-                launchButton.classList.remove('button-float-animation');
-                await Tone.start();
-                launchContainer.classList.add('hidden');
-                mainSequence();
-            }, { once: true });
+            // --- Event Listener ---
+                    const promptForm = document.getElementById('prompt-form');
+                    const launchContainer = document.getElementById('launch-container'); // Corrected ID
+
+                    promptForm.addEventListener('submit', async (event) => {
+                        // Prevent the form from reloading the page
+                        event.preventDefault(); 
+                        
+                        // Start the audio context and the main animation
+                        await Tone.start();
+                        launchContainer.classList.add('hidden');
+                        mainSequence();
+                    }, { once: true });
         });
     </script>
     <div style="font-size:6px" class="absolute bottom-4 w-full text-center text-white text-sm opacity-20">
