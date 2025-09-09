@@ -108,6 +108,22 @@
             border-radius: 50%; animation: cracker-burst 0.6s ease-out forwards;
         }
 
+        @keyframes flyAway {
+        0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(0, -400px) scale(0.5); /* move straight up */
+            opacity: 0;
+        }
+        }
+
+        .fly-away {
+        animation: flyAway 2.5s ease-in forwards;
+        }
+
+
         /* Glitter Effect */
         @keyframes glitter {
             0%, 100% { transform: scale(0.5); opacity: 0.5; }
@@ -179,7 +195,7 @@
     </div>
     
     <!-- Butterfly Animation -->
-    <div id="butterfly-container" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] opacity-0 pointer-events-none z-40">
+    <div id="butterfly-container" class="absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none">
         <dotlottie-wc
             id="dotlottie-butterfly"
             src="/images/Butterfly.lottie"
@@ -364,6 +380,11 @@
                 
                 // Set autoplay attribute to start the animation
                 lottiePlayer.setAttribute('autoplay', true);
+                await wait(1000);
+                    // After a short delay, make it fly away
+                setTimeout(() => {
+                    butterflyContainer.classList.add('fly-away');
+                }, 1200); // butterfly stays a bit before flying
                 
                 // Wait for the animation's approximate duration
                 await wait(3500); 
