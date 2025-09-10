@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI App Soft Launch</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -23,164 +20,87 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.2s ease-in-out;
         }
         #prompt-input::placeholder { color: rgba(54, 49, 135, 0.5); }
-        #prompt-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 29, 0.3); }
-        @keyframes shake-error { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
-        .shake-error { animation: shake-error 0.3s linear; }
         .success { border-color: #22c55e !important; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4) !important; }
         .error { border-color: #ef4444 !important; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4) !important; }
-        @keyframes countdown-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-        .countdown-pulse-animation { animation: countdown-pulse 1s ease-in-out infinite; }
+        @keyframes shake-error { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
+        .shake-error { animation: shake-error 0.3s linear; }
     </style>
 </head>
-<body class="text-[#363187] flex items-center justify-center h-screen">
-
-    <canvas id="neural-network-canvas" class="absolute top-0 left-0 w-full h-full z-0"></canvas>
-    <div id="aria-live-region" class="sr-only" aria-live="assertive"></div>
+<body class="flex items-center justify-center h-screen">
 
     <div id="main-container" class="text-center relative z-10">
         <div id="launch-container" class="flex flex-col items-center">
-            <h1 class="text-4xl md:text-6xl font-black mb-8">The Future of AI in Education</h1>
+            <h1 class="text-4xl md:text-6xl font-black mb-8 text-[#363187]">The Future of AI in Education</h1>
             <form id="prompt-form" class="flex flex-col items-center">
                 <input type="text" id="prompt-input" placeholder="Enter a prompt to unveil">
                 <button type="submit" class="hidden">Submit</button>
             </form>
         </div>
-        <div id="countdown-container" class="hidden">
-            <p id="countdown-timer" class="text-9xl font-black countdown-pulse-animation transition-colors duration-500">5</p>
-        </div>
     </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Element references
-            const launchContainer = document.getElementById('launch-container');
-            const countdownContainer = document.getElementById('countdown-container');
-            const countdownTimer = document.getElementById('countdown-timer');
-            const ariaLiveRegion = document.getElementById('aria-live-region');
             const promptForm = document.getElementById('prompt-form');
             const promptInput = document.getElementById('prompt-input');
-            const networkCanvas = document.getElementById('neural-network-canvas');
-            const ctx = networkCanvas.getContext('2d');
-            let particlesArray;
 
-            // --- Canvas background animation ---
-            function resizeCanvas() { networkCanvas.width = window.innerWidth; networkCanvas.height = window.innerHeight; }
-            window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
-            class Particle {
-                constructor(x, y, dX, dY, s) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=s; }
-                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false); ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; ctx.fill(); }
-                update() {
-                    if (this.x > networkCanvas.width || this.x < 0) { this.directionX = -this.directionX; }
-                    if (this.y > networkCanvas.height || this.y < 0) { this.directionY = -this.directionY; }
-                    this.x += this.directionX; this.y += this.directionY; this.draw();
-                }
-            }
-            function initParticles() {
-                particlesArray = [];
-                let num = (networkCanvas.height * networkCanvas.width) / 12000;
-                for (let i = 0; i < num; i++) {
-                    let size = (Math.random()*2)+1; let x = (Math.random()*(networkCanvas.width-size*4))+size*2; let y = (Math.random()*(networkCanvas.height-size*4))+size*2;
-                    let dX = (Math.random()*.4)-.2; let dY = (Math.random()*.4)-.2;
-                    particlesArray.push(new Particle(x, y, dX, dY, size));
-                }
-            }
-            function connectParticles() {
-                for (let a = 0; a < particlesArray.length; a++) {
-                    for (let b = a; b < particlesArray.length; b++) {
-                        let dist = ((particlesArray[a].x-particlesArray[b].x)*(particlesArray[a].x-particlesArray[b].x)) + ((particlesArray[a].y-particlesArray[b].y)*(particlesArray[a].y-particlesArray[b].y));
-                        if (dist < (networkCanvas.width/8)*(networkCanvas.height/8)) {
-                            let opacity = Math.max(0, 1-(dist/20000)); ctx.strokeStyle=`rgba(255,255,255, ${opacity})`; ctx.lineWidth=0.5;
-                            ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
-                        }
-                    }
-                }
-            }
-            function animateNetwork() {
-                requestAnimationFrame(animateNetwork); ctx.clearRect(0, 0, networkCanvas.width, networkCanvas.height);
-                for (let i=0; i < particlesArray.length; i++) { particlesArray[i].update(); }
-                connectParticles();
-            }
-            resizeCanvas(); initParticles(); animateNetwork();
-            // --- End of Canvas animation ---
-
-            // --- Form submission logic ---
-            promptForm.addEventListener('submit', async (e) => {
+            promptForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const promptText = promptInput.value.trim().toLowerCase();
                 const validKeywords = ["unveil", "launch", "release", "open"];
+
                 if (validKeywords.some(k => promptText.includes(k))) {
-                    promptInput.classList.add('success'); promptInput.disabled=true;
-                    await wait(500);
-                    launchContainer.classList.add('hidden');
-                    await Tone.start();
-                    mainSequence();
+                    promptInput.classList.add('success');
+                    promptInput.disabled = true;
+                    playVideoWithCountdown();
                 } else {
                     promptInput.classList.add('error', 'shake-error');
-                    setTimeout(() => { promptInput.classList.remove('error', 'shake-error'); promptInput.value=''; }, 500);
+                    setTimeout(() => {
+                        promptInput.classList.remove('error', 'shake-error');
+                        promptInput.value = '';
+                    }, 500);
                 }
             });
 
-            // --- Sound setup ---
-            const tickSynth = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, envelope: { attack: 0.001, decay: 0.2, sustain: 0 }, }).toDestination();
-            const suspenseSynth = new Tone.AMSynth({ harmonicity: 1.5, envelope: { attack: 0.1, decay: 0.2, sustain: 0.1, release: 0.5 }, modulation: { type: "sine" }, modulationEnvelope: { attack: 0.5, decay: 0.01 } }).toDestination();
-            const suspenseLoop = new Tone.Loop(time => { suspenseSynth.triggerAttackRelease("C2", "8n", time); }, "4n");
-            
-            // Utility function for delays
-            const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-            // --- Core Functions ---
-            async function startCountdown() {
-                countdownContainer.classList.remove('hidden');
-                ariaLiveRegion.textContent = 'Countdown initiated.';
-                Tone.Transport.seconds=0;
-                Tone.Transport.start();
-                suspenseLoop.start(0);
-                for (let count = 5; count > 0; count--) {
-                    countdownTimer.textContent=count;
-                    ariaLiveRegion.textContent=count;
-                    if(count<=2){countdownTimer.style.color='#ef4444';}else if(count<=4){countdownTimer.style.color='#f59e0b';}
-                    tickSynth.triggerAttackRelease("C4", "8n");
-                    await wait(1000);
+            /* NEW: Helper function to enter fullscreen mode */
+            function enterFullscreen(element) {
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) { /* Safari */
+                    element.webkitRequestFullscreen();
+                } else if (element.msRequestFullscreen) { /* IE11 */
+                    element.msRequestFullscreen();
                 }
-                ariaLiveRegion.textContent='Video starting!';
-                suspenseLoop.stop();
-                Tone.Transport.stop();
             }
 
-            function playVideoAfterCountdown() {
-                // IMPORTANT: Change this to the name of your video file.
-                const videoPath = '/audio/video.mp4'; 
-                
-                // Clear all elements from the page and add the video player
+            function playVideoWithCountdown() {
+                const videoPath = 'https://raw.githubusercontent.com/maduraigeorge/SoftLaunch/main/audio/video.mp4'; 
+
                 document.body.innerHTML = `
                     <video 
                         id="final-video-player" 
-                        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 9999;" 
+                        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover;" 
                         autoplay 
-                        muted 
-                        loop
+                        controls 
                     >
                         <source src="${videoPath}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 `;
-
-                // Set a black background to prevent a white flash while the video loads
                 document.body.style.background = '#000';
-            }
 
-            // This is the main sequence that runs the show
-            async function mainSequence() {
-                // 1. Run the countdown
-                await startCountdown(); 
-                
-                // 2. Immediately play the video
-                playVideoAfterCountdown();
+                const video = document.getElementById('final-video-player');
+                const playPromise = video.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // When playback starts successfully, request fullscreen
+                        enterFullscreen(video);
+                    }).catch(error => {
+                        console.error("Autoplay was prevented by the browser:", error);
+                    });
+                }
             }
         });
     </script>
-    <div style="font-size:6px" class="absolute bottom-4 w-full text-center text-white text-sm opacity-20">
-    george
-    </div>
 </body>
 </html>
