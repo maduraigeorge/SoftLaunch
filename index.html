@@ -16,92 +16,27 @@
             background: linear-gradient(125deg, #75E8FE, #C6C2FA);
             transition: background 2s ease-in-out;
         }
-
         #prompt-input {
-            width: 350px;
-            padding: 1rem;
-            border-radius: 12px;
-            border: 2px solid rgba(54, 49, 135, 0.4);
-            background-color: rgba(255, 255, 255, 0.3);
-            text-align: center;
-            font-size: 1.1rem;
-            color: #363187;
-            outline: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: all 0.2s ease-in-out;
+            width: 350px; padding: 1rem; border-radius: 12px;
+            border: 2px solid rgba(54, 49, 135, 0.4); background-color: rgba(255, 255, 255, 0.3);
+            text-align: center; font-size: 1.1rem; color: #363187; outline: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.2s ease-in-out;
         }
         #prompt-input::placeholder { color: rgba(54, 49, 135, 0.5); }
-        #prompt-input:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 29, 0.3);
-        }
-        
+        #prompt-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 29, 0.3); }
         @keyframes shake-error { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
         .shake-error { animation: shake-error 0.3s linear; }
         .success { border-color: #22c55e !important; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4) !important; }
         .error { border-color: #ef4444 !important; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4) !important; }
-
         @keyframes countdown-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
         .countdown-pulse-animation { animation: countdown-pulse 1s ease-in-out infinite; }
-
-        @keyframes logo-lifecycle {
-            0%   { opacity: 0; transform: scale(0.8); }
-            30%  { opacity: 1; transform: scale(1); }
-            40%  { opacity: 1; transform: scale(1); }
-            100% { opacity: 1; transform: scale(0.9); }
-        }
-        .logo-lifecycle-animation {
-            animation: logo-lifecycle 5s ease-out forwards;
-        }
-        
-        .curtain {
-            background-color: #800000;
-            background-image: repeating-linear-gradient(to right, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 20px, rgba(255,255,255,0.05) 20px, rgba(255,255,255,0.05) 40px);
-            clip-path: url(#curtain-clip);
-        }
-        #left-curtain { transform-origin: left; box-shadow: inset -15px 0 20px -10px rgba(0,0,0,0.6); }
-        #right-curtain { transform-origin: right; box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.6); }
-        .curtain-trim::after {
-            content: ''; position: absolute; top: 0; width: 10px; height: 100%;
-            background: linear-gradient(#fde047, #eab308, #fde047); box-shadow: 0 0 15px 2px #facc15;
-        }
-        #left-curtain.curtain-trim::after { right: -5px; }
-        #right-curtain.curtain-trim::after { left: -5px; }
-        
-        @keyframes cracker-burst { 0% { transform: scale(0); opacity: 1; } 50% { opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
-        .cracker-particle { position: absolute; width: 5px; height: 5px; background: white; border-radius: 50%; animation: cracker-burst 0.6s ease-out forwards; }
-
-        @keyframes flyAway { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(0, -400px) scale(0.5); opacity: 0; } }
-        .fly-away { animation: flyAway 2.5s ease-in forwards; }
-
-        @keyframes glitter { 0%, 100% { transform: scale(0.5); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } }
-        .glitter-particle { position: absolute; background-color: white; border-radius: 50%; animation: glitter 1.5s ease-in-out infinite; box-shadow: 0 0 10px #fff, 0 0 20px #fde047, 0 0 30px #0ea5e9; }
-
-        /* --- FINAL FIX FOR ANIMATION JERK --- */
-        /* This tells the browser to optimize the logo for transform animations */
-        #product-logo {
-            will-change: transform;
-        }
-        
-        .word-span {
-            display: inline-block;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            /* This tells the browser to optimize the words for animation */
-            will-change: transform, opacity;
-        }
-        .word-span.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
     </style>
 </head>
 <body class="text-[#363187] flex items-center justify-center h-screen">
 
     <canvas id="neural-network-canvas" class="absolute top-0 left-0 w-full h-full z-0"></canvas>
-    <svg width="0" height="0" style="position:absolute"><defs><clipPath id="curtain-clip" clipPathUnits="objectBoundingBox"><path d="M0,0 L1,0 L1,1 L0,1 Z" /></clipPath></defs></svg>
     <div id="aria-live-region" class="sr-only" aria-live="assertive"></div>
+
     <div id="main-container" class="text-center relative z-10">
         <div id="launch-container" class="flex flex-col items-center">
             <h1 class="text-4xl md:text-6xl font-black mb-8">The Future of AI in Education</h1>
@@ -113,53 +48,24 @@
         <div id="countdown-container" class="hidden">
             <p id="countdown-timer" class="text-9xl font-black countdown-pulse-animation transition-colors duration-500">5</p>
         </div>
-        <div id="product-reveal-container" class="hidden text-center opacity-0 relative">
-            <div id="glitter-container" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
-            <img id="product-logo" src="https://raw.githubusercontent.com/maduraigeorge/SoftLaunch/main/images/ai_logo.png" class="mx-auto mb-6 max-w-[1000px] h-auto" alt="Final Logo">
-            <p id="tagline-text" class="text-4xl md:text-5xl lg:text-6xl font-bold text-white"></p>
-        </div>
     </div>
-    <div id="company-logo-container" class="absolute top-0 left-0 w-full h-full flex items-center justify-center z-20 opacity-0 pointer-events-none">
-        <img src="https://raw.githubusercontent.com/maduraigeorge/SoftLaunch/main/images/logo.png" class="mx-auto mb-6 max-w-[200px] h-auto" alt="Company Logo">
-    </div>
-    <div id="stage-curtains" class="hidden absolute top-0 left-0 w-full h-full z-30 pointer-events-none">
-        <div id="left-curtain" class="absolute top-0 left-0 w-1/2 h-full curtain curtain-trim"></div>
-        <div id="right-curtain" class="absolute top-0 right-0 w-1/2 h-full curtain curtain-trim"></div>
-    </div>
-    <div id="butterfly-container" class="absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none">
-        <dotlottie-wc id="dotlottie-butterfly" src="https://raw.githubusercontent.com/maduraigeorge/SoftLaunch/main/images/Butterfly.lottie" style="width: 300px; height: 300px;" autoplay loop speed="1"></dotlottie-wc>
-    </div>
-    <div id="effects-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-50"></div>
-    <audio id="celebration-audio" src="https://raw.githubusercontent.com/maduraigeorge/SoftLaunch/main/audio/applause.mp3" preload="auto"></audio>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Element references
             const launchContainer = document.getElementById('launch-container');
             const countdownContainer = document.getElementById('countdown-container');
             const countdownTimer = document.getElementById('countdown-timer');
-            const productRevealContainer = document.getElementById('product-reveal-container');
-            const effectsContainer = document.getElementById('effects-container');
             const ariaLiveRegion = document.getElementById('aria-live-region');
-            const leftCurtain = document.getElementById('left-curtain');
-            const rightCurtain = document.getElementById('right-curtain');
-            const butterflyContainer = document.getElementById('butterfly-container');
-            const lottiePlayer = document.getElementById('dotlottie-butterfly');
             const promptForm = document.getElementById('prompt-form');
             const promptInput = document.getElementById('prompt-input');
-            const companyLogoContainer = document.getElementById('company-logo-container');
-            const celebrationAudio = document.getElementById('celebration-audio');
-            const taglineText = document.getElementById('tagline-text');
-            const productLogo = document.getElementById('product-logo');
             const networkCanvas = document.getElementById('neural-network-canvas');
             const ctx = networkCanvas.getContext('2d');
             let particlesArray;
 
-            function resizeCanvas() {
-                networkCanvas.width = window.innerWidth;
-                networkCanvas.height = window.innerHeight;
-            }
+            // --- Canvas background animation ---
+            function resizeCanvas() { networkCanvas.width = window.innerWidth; networkCanvas.height = window.innerHeight; }
             window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
-
             class Particle {
                 constructor(x, y, dX, dY, s) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=s; }
                 draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false); ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; ctx.fill(); }
@@ -195,122 +101,81 @@
                 connectParticles();
             }
             resizeCanvas(); initParticles(); animateNetwork();
+            // --- End of Canvas animation ---
 
+            // --- Form submission logic ---
             promptForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const promptText = promptInput.value.trim().toLowerCase();
                 const validKeywords = ["unveil", "launch", "release", "open"];
                 if (validKeywords.some(k => promptText.includes(k))) {
-                    promptInput.classList.add('success'); promptInput.disabled=true; await wait(500);
-                    launchContainer.classList.add('hidden'); await Tone.start(); mainSequence();
+                    promptInput.classList.add('success'); promptInput.disabled=true;
+                    await wait(500);
+                    launchContainer.classList.add('hidden');
+                    await Tone.start();
+                    mainSequence();
                 } else {
                     promptInput.classList.add('error', 'shake-error');
                     setTimeout(() => { promptInput.classList.remove('error', 'shake-error'); promptInput.value=''; }, 500);
                 }
             });
 
+            // --- Sound setup ---
             const tickSynth = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, envelope: { attack: 0.001, decay: 0.2, sustain: 0 }, }).toDestination();
             const suspenseSynth = new Tone.AMSynth({ harmonicity: 1.5, envelope: { attack: 0.1, decay: 0.2, sustain: 0.1, release: 0.5 }, modulation: { type: "sine" }, modulationEnvelope: { attack: 0.5, decay: 0.01 } }).toDestination();
             const suspenseLoop = new Tone.Loop(time => { suspenseSynth.triggerAttackRelease("C2", "8n", time); }, "4n");
-            const fanfareSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: "fatsawtooth" }, envelope: { attack: 0.01, decay: 1, sustain: 0.2, release: 1 }, }).toDestination();
-            const crackerSynth = new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }, }).toDestination();
-            const curtainSwooshSynth = new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.1, decay: 2.5, sustain: 0, release: 1 }, }).toDestination();
-            const butterflySwooshSynth = new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.2, decay: 0.5, sustain: 0, release: 0.8 }, volume: -10 }).toDestination();
-            const drumRollSynth = new Tone.NoiseSynth({ noise: { type: 'white' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0 }, volume: -20 }).toDestination();
-            const drumRollLoop = new Tone.Loop(time => { drumRollSynth.triggerAttackRelease("64n", time); }, "32n");
             
+            // Utility function for delays
             const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+            // --- Core Functions ---
             async function startCountdown() {
-                countdownContainer.classList.remove('hidden'); ariaLiveRegion.textContent = 'Countdown initiated.';
-                Tone.Transport.seconds=0; Tone.Transport.start(); suspenseLoop.start(0);
+                countdownContainer.classList.remove('hidden');
+                ariaLiveRegion.textContent = 'Countdown initiated.';
+                Tone.Transport.seconds=0;
+                Tone.Transport.start();
+                suspenseLoop.start(0);
                 for (let count = 5; count > 0; count--) {
-                    countdownTimer.textContent=count; ariaLiveRegion.textContent=count;
+                    countdownTimer.textContent=count;
+                    ariaLiveRegion.textContent=count;
                     if(count<=2){countdownTimer.style.color='#ef4444';}else if(count<=4){countdownTimer.style.color='#f59e0b';}
-                    tickSynth.triggerAttackRelease("C4", "8n"); await wait(1000);
+                    tickSynth.triggerAttackRelease("C4", "8n");
+                    await wait(1000);
                 }
-                ariaLiveRegion.textContent='Liftoff!'; suspenseLoop.stop(); Tone.Transport.stop(); countdownContainer.classList.add('hidden');
+                ariaLiveRegion.textContent='Video starting!';
+                suspenseLoop.stop();
+                Tone.Transport.stop();
             }
-            async function animateButterfly() {
-                butterflyContainer.style.opacity='1'; butterflyContainer.style.transition='opacity 0.5s ease-out'; butterflySwooshSynth.triggerAttackRelease("1n");
-                lottiePlayer.setAttribute('autoplay', true); await wait(1000);
-                setTimeout(() => { butterflyContainer.classList.add('fly-away'); }, 1200); 
-                await wait(3500); 
+
+            function playVideoAfterCountdown() {
+                // IMPORTANT: Change this to the name of your video file.
+                const videoPath = '/audio/video.mp4'; 
+                
+                // Clear all elements from the page and add the video player
+                document.body.innerHTML = `
+                    <video 
+                        id="final-video-player" 
+                        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 9999;" 
+                        autoplay 
+                        muted 
+                        loop
+                    >
+                        <source src="${videoPath}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                `;
+
+                // Set a black background to prevent a white flash while the video loads
+                document.body.style.background = '#000';
             }
-            async function openStageCurtains() {
-                document.getElementById('stage-curtains').classList.remove('hidden');
-                Tone.Transport.seconds=0; Tone.Transport.start(); drumRollLoop.start(0); drumRollSynth.volume.rampTo(0, 5.5); 
-                butterflyContainer.style.opacity='0'; curtainSwooshSynth.triggerAttackRelease("2n");
-                companyLogoContainer.style.transition='opacity 1s ease-in-out'; await wait(500); companyLogoContainer.style.opacity='1';
-                const ts = 'transform 6000ms cubic-bezier(0.65, 0, 0.35, 1)';
-                leftCurtain.style.transition=ts; rightCurtain.style.transition=ts;
-                await wait(100);
-                leftCurtain.style.transform='translateX(-100%) scaleX(0.1)'; rightCurtain.style.transform='translateX(100%) scaleX(0.1)';
-                await wait(2500); companyLogoContainer.style.opacity='0';
-                await wait(3500);
-                drumRollLoop.stop(); Tone.Transport.stop();
-            }
-            function createGlitter() {
-                const glitterContainer = document.getElementById('glitter-container');
-                if(!glitterContainer)return;
-                for (let i = 0; i < 30; i++) {
-                    const p = document.createElement('div'); p.className = 'glitter-particle';
-                    const size = Math.random()*4+1; p.style.width=`${size}px`; p.style.height=`${size}px`;
-                    p.style.top=`${Math.random()*100}%`; p.style.left=`${Math.random()*100}%`;
-                    p.style.animationDelay=`${Math.random()*1.5}s`; glitterContainer.appendChild(p);
-                }
-            }
-            async function revealProduct() {
-                productRevealContainer.classList.remove('hidden', 'opacity-0');
-                ariaLiveRegion.textContent = 'Product Revealed.';
-                productLogo.classList.add('logo-lifecycle-animation');
-                const startTime = Tone.now() + 0.1;
-                fanfareSynth.triggerAttackRelease(["C4", "E4", "G4", "C5"], "2n", startTime);
-                createCrackers(startTime); fireConfetti(); createGlitter();
-                await wait(2000);
-                const fullTagline = "Soulful AI for Schools";
-                taglineText.innerHTML = '';
-                fullTagline.split(' ').forEach(word => {
-                    const wordSpan = document.createElement('span'); wordSpan.textContent = word;
-                    wordSpan.className = 'word-span mr-3'; taglineText.appendChild(wordSpan);
-                });
-                const wordSpans = taglineText.querySelectorAll('.word-span');
-                for (let i = 0; i < wordSpans.length; i++) {
-                    await wait(250); wordSpans[i].classList.add('visible');
-                }
-            }
-            function createCrackers(startTime) {
-                const events = [];
-                for(let i=0; i<5; i++){ const d=Math.random()*.5; events.push({audioTime:startTime+d, visualDelay:d*1000});}
-                events.sort((a,b)=>a.audioTime-b.audioTime);
-                events.forEach(event=>{
-                    crackerSynth.triggerAttackRelease("16n", event.audioTime);
-                    setTimeout(() => {
-                        const burst = document.createElement('div'); burst.style.position='absolute';
-                        burst.style.left=`${Math.random()*80+10}%`; burst.style.top=`${Math.random()*70+15}%`;
-                        for(let j=0; j<15; j++){
-                            const p=document.createElement('div'); p.className='cracker-particle';
-                            const a=Math.random()*360; const d=Math.random()*50+20;
-                            p.style.transform=`rotate(${a}deg) translateX(${d}px)`;
-                            p.style.background=['#ffd700','#ff69b4','#00ffff'][Math.floor(Math.random()*3)];
-                            burst.appendChild(p);
-                        }
-                        effectsContainer.appendChild(burst); setTimeout(() => burst.remove(), 1000);
-                    }, event.visualDelay);
-                });
-            }
-            function fireConfetti() {
-                const dur=2*1000, end=Date.now()+dur, colors=['#26ccff','#a2affd','#ff5e7e','#88ff5a','#fcff42'];
-                (function frame(){
-                    confetti({particleCount:5, angle:60, spread:55, origin:{x:0}, colors:colors});
-                    confetti({particleCount:5, angle:120, spread:55, origin:{x:1}, colors:colors});
-                    if(Date.now()<end)requestAnimationFrame(frame);
-                }());
-            }
+
+            // This is the main sequence that runs the show
             async function mainSequence() {
-                await wait(500); await startCountdown(); await animateButterfly(); await openStageCurtains();
-                await revealProduct();
-                celebrationAudio.currentTime=0; celebrationAudio.play().catch(err=>console.log("Audio play blocked:",err));
+                // 1. Run the countdown
+                await startCountdown(); 
+                
+                // 2. Immediately play the video
+                playVideoAfterCountdown();
             }
         });
     </script>
