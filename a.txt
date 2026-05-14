@@ -1,0 +1,1 @@
+const videoPath = 'https://raw.githubusercontent.com/maduraigeorge/SoftLaunch/main/audio/video.mp4';
