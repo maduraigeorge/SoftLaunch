@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chrysalis App Launch</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Inter',sans-serif;
+margin:0;
+overflow:hidden;
+background:linear-gradient(125deg,#75E8FE,#9FE5C2,#C6C2FA);
+background-size:400% 400%;
+animation:bg 15s ease infinite alternate;
+}
+@keyframes bg{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+#neural-canvas{
+position:fixed;
+inset:0;
+z-index:-1;
+}
+
+video{
+position:fixed;
+inset:0;
+width:100vw;
+height:100vh;
+object-fit:cover;
+background:black;
+}
+
+.fade{animation:fade 1s ease forwards}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+.qr-animate{
+opacity:0;
+transform:translateY(40px);
+animation:qr 1s ease forwards;
+}
+@keyframes qr{to{opacity:1;transform:translateY(0)}}
+
+#hero-image{
+width:clamp(200px, 50vw, 380px);
+margin:0 auto 20px;
+display:block;
+}
+
+/* ===== INPUT ROW ===== */
+.input-wrap{
+display:flex;
+gap:12px;
+align-items:center;
+}
+
+/* Arrow button */
+.go-btn{
+width:52px;
+height:52px;
+border-radius:50%;
+background:#363187;
+color:white;
+font-size:26px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+transition:.2s;
+}
+.go-btn:hover{transform:scale(1.1);}
+
+/* Bigger QR */
+.qr-img{
+width:clamp(200px, 50vw, 300px);
+height:auto;
+}
+
+/* ChatGPT-style prompt box */
+
+.prompt-box{
+display:flex;
+align-items:center;
+background:white;
+border-radius:999px;
+padding:6px 10px;
+width:min(420px, 92vw);
+max-width:90vw;
+box-shadow:0 8px 20px rgba(0,0,0,.12);
+border:2px solid #36318744;
+}
+
+.prompt-box:focus-within{
+border-color:#363187;
+}
+
+#prompt-input{
+flex:1;
+border:none;
+outline:none;
+padding:12px 14px;
+font-size:16px;
+background:transparent;
+}
+
+.send-btn{
+width:44px;
+height:44px;
+border-radius:50%;
+background:#363187;
+color:white;
+font-size:22px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+border:none;
+transition:.2s;
+}
+
+.send-btn:hover{
+transform:scale(1.1);
+}
+
+
+</style>
+</head>
+
+<body class="flex items-center justify-center h-screen">
+
+<!-- FULLSCREEN START OVERLAY -->
+<div id="fs-overlay"
+style="
+position:fixed;
+inset:0;
+background:transparent;
+z-index:9999;">
+</div>
+
+
+<canvas id="neural-canvas"></canvas>
+
+<!-- ================= LAUNCH SCREEN ================= -->
+<div id="launch-screen"
+class="flex flex-col h-screen w-full px-4 fade">
+
+<!-- TOP HALF : HERO -->
+<div class="flex items-center justify-center h-1/2">
+
+  <img src="hero_image.png" id="hero-image">
+
+</div>
+
+<!-- BOTTOM HALF : TEXT + PROMPT -->
+<div class="flex flex-col items-center justify-start h-1/2 pt-6">
+
+  <h1 class="font-black text-[#363187] text-center
+  text-[1.8rem] sm:text-[2.4rem] md:text-[3.2rem]">
+  Extend learning to your home
+  </h1>
+
+  <div class="mt-6">
+
+    <form id="prompt-form" class="prompt-box">
+
+      <input id="prompt-input"
+      placeholder="Enter a prompt to unveil">
+
+      <button type="submit" class="send-btn">➜</button>
+
+    </form>
+
+  </div>
+
+</div>
+
+</div>
+
+
+
+
+<!-- ================= VIDEO ================= -->
+<video id="launch-video"
+playsinline
+preload="auto">
+
+<source src="chai_video.mp4" type="video/mp4">
+</video>
+
+<!-- ================= QR SCREEN ================= -->
+<div id="qr-screen" style="display:none"
+class="flex flex-col h-screen px-6 py-10 cursor-pointer">
+
+<!-- TOP HALF -->
+<div class="flex items-center justify-center h-1/2 fade">
+
+<a href="https://thinkroom.chrysalis.world/app/android/" target="_blank"
+class="qr-animate flex flex-col items-center">
+
+  <div class="bg-white p-4 rounded-2xl shadow-2xl">
+    <img src="android_qr.png" class="qr-img">
+  </div>
+
+</a>
+
+</div>
+
+<!-- BOTTOM HALF -->
+<div class="flex flex-col items-center justify-center h-1/2 text-center fade">
+
+<img src="logo.png" class="mx-auto mb-6 w-32">
+
+<h1 class="text-3xl md:text-5xl font-black mb-3 text-[#363187]">
+Get the App
+</h1>
+
+<p class="text-lg opacity-80">
+Scan the QR code to download and start using the Chrysalis App
+</p>
+
+<p class="mt-6 text-sm opacity-70">
+Step 1: Scan → Step 2: Install → Step 3: Sign In
+</p>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+/* FULLSCREEN */
+function goFullscreen(el){
+if(el.requestFullscreen) el.requestFullscreen();
+else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+
+/* PARTICLES */
+const canvas=document.getElementById("neural-canvas");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let particles=[];
+class P{
+constructor(){
+this.x=Math.random()*canvas.width;
+this.y=Math.random()*canvas.height;
+this.dx=(Math.random()-.5)*0.4;
+this.dy=(Math.random()-.5)*0.4;
+this.r=Math.random()*2+1;
+}
+draw(){
+ctx.beginPath();
+ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+ctx.fillStyle="rgba(255,255,255,.25)";
+ctx.fill();
+}
+update(){
+this.x+=this.dx;
+this.y+=this.dy;
+if(this.x<0||this.x>canvas.width) this.dx*=-1;
+if(this.y<0||this.y>canvas.height) this.dy*=-1;
+this.draw();
+}
+}
+function init(){
+particles=[];
+for(let i=0;i<(canvas.width*canvas.height)/9000;i++)
+particles.push(new P());
+}
+function animate(){
+requestAnimationFrame(animate);
+ctx.clearRect(0,0,canvas.width,canvas.height);
+particles.forEach(p=>p.update());
+}
+init(); animate();
+
+/* FLOW */
+const form=document.getElementById("prompt-form");
+const launch=document.getElementById("launch-screen");
+const video=document.getElementById("launch-video");
+const qr=document.getElementById("qr-screen");
+
+video.style.display="none";
+
+/* Accepted prompts */
+const triggers=["unveil","launch","open","start","go","play"];
+
+form.addEventListener("submit",e=>{
+e.preventDefault();
+
+const text=document.getElementById("prompt-input").value.toLowerCase();
+
+if(triggers.some(word=>text.includes(word))){
+launch.style.display="none";
+video.style.display="block";
+//goFullscreen(video);
+video.load();
+video.muted = false;
+video.volume = 1.0;
+video.play();
+
+}
+});
+
+/* SHOW QR */
+function showQR(){
+video.pause();
+video.style.display="none";
+qr.style.display="flex";
+//goFullscreen(document.documentElement);
+}
+video.addEventListener("ended",showQR);
+
+const fsOverlay = document.getElementById("fs-overlay");
+
+fsOverlay.addEventListener("click", () => {
+
+  // Enter fullscreen
+  const el = document.documentElement;
+
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  else if (el.msRequestFullscreen) el.msRequestFullscreen();
+
+  fsOverlay.style.display = "none";
+
+});
+
+
+</script>
+
+</body>
+</html>
